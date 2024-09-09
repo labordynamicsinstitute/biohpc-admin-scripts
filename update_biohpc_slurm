@@ -1,0 +1,16 @@
+#!/bin/bash
+
+PATH=/programs/bin/labutils:$PATH
+
+offset="6 days"
+current_date=$(date +%Y-%m-%d)
+future_date=$(date -d "$current_date + $offset" +%Y-%m-%d)
+echo "Setting end date to $future_date."
+# now reset the values in the reservation
+
+list_of_servers=$(biohpc_res list | grep "ECCO Slurm temporary" | awk ' { print $1 } ')
+
+for arg in $list_of_servers
+do 
+  biohpc_res edit $arg --end "$future_date"
+done
