@@ -1,0 +1,68 @@
+#!/bin/bash
+
+PATH=/programs/bin/labutils:$PATH
+
+# The script will add a 1-day (or as defined) reservation to all free ECCO nodes
+# The separate "update_biohpc_slurm" script will extend those reservations the next time around
+offset="1 days"
+
+# the group these reservations need to belong to 
+# The user running this script needs to have that in their list!
+# run `biohpc_res accounts` to see what groups you are in
+resacct=2519 # "ECCO" group for accounting purposes
+resgroup="ECCO" # the group of IDs that will be added to the reservation
+
+# compute stuff
+current_date=$(date +%Y-%m-%d)
+future_date=$(date -d "$current_date + $offset" +%Y-%m-%d)
+
+echo "Setting end date to $future_date."
+
+# Get the list of available nodes at this time:
+list_of_servers=$(biohpc_res avail --category restricted)
+
+# For each of the servers, create a reservation
+ressuccess=""
+serversuccess=""
+slurm_head="cbsueccosl01"
+
+for server in $list_of_servers
+do
+  response=$(biohpc_res new $resacct --start $current_date --end $future_date  --server $server --comment "ECCO Slurm temporary")
+  echo "Response for $server: $response"
+  set -- $response
+  case $1 in 
+    "Error:")
+      echo "Error: $response"
+      ;;
+    *)
+    case $2 in
+      [1-9]*)
+        echo "Success: $response"
+        ressuccess="$ressuccess $2"
+        serversuccess="$serversuccess $server"
+        ;;
+      *)
+        echo "Not sure: $response"
+        exit 1
+        ;;
+    esac
+    ;;
+  esac
+done
+
+# add the entire ECCO group to the reservation
+# Make the reservation hidden
+
+for res in $ressuccess
+do
+  biohpc_res edit $res --add $resgroup --hide
+done
+
+# Now add them to SLURM
+
+for server in $serversuccess
+do
+  echo "Adding $server to SLURM"
+  manage_slurm addNode ${slurm_head} $server
+done
