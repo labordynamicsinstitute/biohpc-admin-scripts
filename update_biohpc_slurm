@@ -1,16 +1,22 @@
 #!/bin/bash
+# This should run every 12 hours, or whatever the offset is
 
 PATH=/programs/bin/labutils:$PATH
 
-offset="6 days"
+offset="12 hours"
 current_date=$(date +%Y-%m-%d)
-future_date=$(date -d "$current_date + $offset" +%Y-%m-%d)
-echo "Setting end date to $future_date."
+#future_date=$(date -d "$current_date + $offset" +"%Y-%m-%d %H:%M")
 # now reset the values in the reservation
 
-list_of_servers=$(biohpc_res list | grep "ECCO Slurm temporary" | awk ' { print $1 } ')
+list_of_resids=$(biohpc_res list | grep "ECCO Slurm temporary" | awk ' { print $1 } ')
 
-for arg in $list_of_servers
+for arg in $list_of_resids
 do 
+  # get the current end date
+  current_end=$(biohpc_res list | grep $arg | awk ' { print $8, $9, $10}') 
+  future_date=$(date -d "$current_end + $offset" +"%Y-%m-%d %H:%M")
+  # reporting
+  server=$(biohpc_res list | grep $arg | awk ' { print $2 } ')
+  echo "Attempting to set end date for $server to $future_date."
   biohpc_res edit $arg --end "$future_date"
 done

@@ -5,6 +5,8 @@ PATH=/programs/bin/labutils:$PATH
 # The script will add a 1-day (or as defined) reservation to all free ECCO nodes
 # The separate "update_biohpc_slurm" script will extend those reservations the next time around
 offset="1 days"
+default_time="4:00 AM"
+default_timem1="3:59 AM"
 
 # the group these reservations need to belong to 
 # The user running this script needs to have that in their list!
@@ -16,7 +18,7 @@ resgroup="ECCO" # the group of IDs that will be added to the reservation
 current_date=$(date +%Y-%m-%d)
 future_date=$(date -d "$current_date + $offset" +%Y-%m-%d)
 
-echo "Setting end date to $future_date."
+echo "Setting end date to $future_date $default_time."
 
 # Get the list of available nodes at this time:
 list_of_servers=$(biohpc_res avail --category restricted)
@@ -28,7 +30,7 @@ slurm_head="cbsueccosl01"
 
 for server in $list_of_servers
 do
-  response=$(biohpc_res new $resacct --start $current_date --end $future_date  --server $server --comment "ECCO Slurm temporary")
+  response=$(biohpc_res new $resacct --start "$current_date $default_timem1" --end "$future_date $default_time"  --server $server --comment "ECCO Slurm temporary")
   echo "Response for $server: $response"
   set -- $response
   case $1 in 

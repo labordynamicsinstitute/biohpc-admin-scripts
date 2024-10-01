@@ -1,2 +1,3 @@
-17 1 * * * /home/lv39/bin/biohpc-scripts/update_biohpc_slurm
-17 3 * * * /home/lv39/bin/biohpc-scripts/addnode_biohpc_slurm
+17 10 * * * /home/lv39/bin/biohpc-scripts/addnode_biohpc_slurm
+55 11 * * * /home/lv39/bin/biohpc-scripts/update_biohpc_slurm
+55 23 * * * /home/lv39/bin/biohpc-scripts/update_biohpc_slurm
