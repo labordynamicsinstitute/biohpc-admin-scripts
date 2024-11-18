@@ -1,3 +1,4 @@
 17 10 * * * /home/lv39/bin/biohpc-scripts/addnode_biohpc_slurm
 55 11 * * * /home/lv39/bin/biohpc-scripts/update_biohpc_slurm
 55 23 * * * /home/lv39/bin/biohpc-scripts/update_biohpc_slurm
+00  * * * * /home/lv39/bin/biohpc-scripts/query_biohpc_slurm

@@ -1,0 +1,39 @@
+#!/bin/bash
+# This should run every 1 hour
+
+PATH=/programs/bin/labutils:$PATH
+WORKDIR=/tmp/$(whoami)
+# Repository details
+REPO_URL="https://github.com/labordynamicsinstitute/ecco-notes.git"
+source $HOME/.envvars
+API_KEY="$GITHUB_API_CRON"
+REPO_USER=$GITHUB_USER
+
+[[ -d $WORKDIR ]] || mkdir $WORKDIR
+REPO_DIR=${WORKDIR}/cbsueccosl01_status
+WORKFILE=${REPO_DIR}/_data/eccoload.txt
+
+current_date=$(date +%Y-%m-%d)
+
+
+# Clone the repository
+git clone "$REPO_URL" ${REPO_DIR}
+cd $REPO_DIR
+
+# Configure repository-specific credentials
+git config --local credential.username "Crontab on ECCO"
+git config --local credential.helper "!f() { echo \"username=$REPO_USER\"; echo \"password=$API_KEY\"; }; f"
+# Make scripted changes 
+echo "As of ${current_date}:" >  $WORKFILE
+echo "" >>  $WORKFILE
+sinfo --cluster cbsueccosl01 >> $WORKFILE
+
+# Commit and push changes
+git add .
+git commit -m "Automated update on system status"
+git push origin main
+
+# Clean up
+cd ..
+rm -rf $REPO_DIR
+
