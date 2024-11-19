@@ -4,7 +4,7 @@
 PATH=/programs/bin/labutils:$PATH
 
 offset="36 hours"
-current_date=$(date +%Y-%m-%d)
+current_date=$(date +%Y-%m-%d %H:%M)
 #future_date=$(date -d "$current_date + $offset" +"%Y-%m-%d %H:%M")
 # now reset the values in the reservation
 
