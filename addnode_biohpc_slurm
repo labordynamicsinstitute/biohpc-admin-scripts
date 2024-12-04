@@ -79,9 +79,20 @@ do
 done
 
 # Now add them to SLURM
+# We check for all current reservations, and add the nodes to SLURM
 
-for server in $serversuccess
+list_of_servers=$(biohpc_res list --current | grep "ECCO Slurm temporary" | awk '{print $2}')
+
+for server in $list_of_servers
 do
-  echo "Adding $server to SLURM"
-  manage_slurm addNode ${slurm_head} $server
+  # if the server is not yet in SLURM, add it
+  manage_slurm list | grep -q $server 
+  if [ $? -eq 0 ]
+  then
+    echo "$server is already in SLURM"
+    continue
+  else 
+    echo "Adding $server to SLURM"
+    manage_slurm addNode ${slurm_head} $server
+  fi
 done

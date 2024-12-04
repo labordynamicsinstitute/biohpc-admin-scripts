@@ -46,7 +46,7 @@ do
   echo "Response for $server: $response"
   # test the response for presence of "Error:"
   echo $response | grep -q "Error:"
-  if [ $? == 0 ]
+  if [ $? -eq 0 ]
   then
     echo "Failed to extend reservation. Adding a new reservation"
     echo "from $current_end to $future_date."
