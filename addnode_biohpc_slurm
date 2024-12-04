@@ -8,6 +8,25 @@ offset="1 days"
 default_time="4:00 AM"
 default_timem1="3:59 AM"
 
+
+# see if we have 1 argument, and if yes, make that the server we will add
+
+if [ $# -eq 1 ]
+then
+  list_of_servers=$1
+else
+  # Get the list of available nodes at this time:
+  list_of_servers=$(biohpc_res avail --category restricted)
+fi
+
+if [ -z "$list_of_servers" ]
+then
+  echo "No servers available at this time."
+  exit 1
+else
+  echo "Servers available: $list_of_servers"
+fi
+
 # the group these reservations need to belong to 
 # The user running this script needs to have that in their list!
 # run `biohpc_res accounts` to see what groups you are in
@@ -20,8 +39,6 @@ future_date=$(date -d "$current_date + $offset" +%Y-%m-%d)
 
 echo "Setting end date to $future_date $default_time."
 
-# Get the list of available nodes at this time:
-list_of_servers=$(biohpc_res avail --category restricted)
 
 # For each of the servers, create a reservation
 ressuccess=""

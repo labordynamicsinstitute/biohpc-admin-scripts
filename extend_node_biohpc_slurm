@@ -1,0 +1,66 @@
+#!/bin/bash
+
+PATH=/programs/bin/labutils:$PATH
+
+# The script will add a 1-day (or as defined) reservation to a specific node, after any current reservation
+offset="1 days"
+resacct=2556 # "ECCO" group for accounting purposes
+resgroup="ECCO" # the group of IDs that will be added to the reservation
+
+
+# see if we have 1 argument, and if yes, make that the server we will add
+
+if [ $# -eq 1 ]
+then
+  list_of_servers=$1
+else
+  # exit because we must manually provide a server name
+  echo "You must provide a server name within the ECCO Slurm cluster."
+  echo "Available reservations:"
+  biohpc_res list | grep "ECCO Slurm temporary"
+  exit 1
+fi
+
+if [ -z "$list_of_servers" ]
+then
+  echo "No servers available at this time."
+  exit 1
+else
+  echo "Servers to be extended: $list_of_servers"
+fi
+
+# now reset the values in the reservation
+
+list_of_resids=$(biohpc_res list | grep "ECCO Slurm temporary" | grep $list_of_servers | sort -k 8| tail -1 | awk ' { print $1 } ')
+
+for arg in $list_of_resids
+do 
+  # get the current end date
+  current_end=$(biohpc_res list | grep $arg | awk ' { print $8, $9, $10}') 
+  future_date=$(date -d "$current_end + $offset" +"%Y-%m-%d %H:%M")
+  # reporting
+  server=$(biohpc_res list | grep $arg | awk ' { print $2 } ')
+  echo "Attempting to extend reservation $arg on $server to $future_date."
+  response=$(biohpc_res edit $arg --end "$future_date")
+  # if the response has "Error:" in it, then we need to add a new reservation
+  echo "Response for $server: $response"
+  # test the response for presence of "Error:"
+  echo $response | grep -q "Error:"
+  if [ $? == 0 ]
+  then
+    echo "Failed to extend reservation. Adding a new reservation"
+    echo "from $current_end to $future_date."
+    response=$(biohpc_res new $resacct --start "$current_end" --end "$future_date"  --server $server --comment "ECCO Slurm temporary")
+    echo "Response for $server: $response"
+    echo $response | grep -q "Error:"
+    if [ $? -ne 0 ]
+    then
+      # if the response is not an error, then we need to add the group
+      res=$(echo $response | awk ' { print $2 } ')
+      response=$(biohpc_res edit $res --add $resgroup --hide)
+      echo "Response for $server and reservation $res: $response"
+    fi
+  else 
+    echo "Successfully extended reservation."
+  fi
+done
