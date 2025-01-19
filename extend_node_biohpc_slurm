@@ -37,7 +37,7 @@ for arg in $list_of_resids
 do 
   # get the current end date
   current_end=$(biohpc_res list | grep $arg | awk ' { print $8, $9, $10}') 
-  future_date=$(date -d "$current_end + $offset" +"%Y-%m-%d %H:%M")
+  future_date=$(date -d "$current_end + $offset" +"%Y-%m-%d\ %H:%M")
   # reporting
   server=$(biohpc_res list | grep $arg | awk ' { print $2 } ')
   echo "Attempting to extend reservation $arg on $server to $future_date."
