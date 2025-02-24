@@ -13,7 +13,7 @@ REPO_USER=$GITHUB_USER
 REPO_DIR=${WORKDIR}/cbsueccosl01_status
 WORKFILE=${REPO_DIR}/_data/eccoload.txt
 
-current_date=$(date +%Y-%m-%d)
+current_date=$(date +"%Y-%m-%d %H:%M")
 
 
 # Clone the repository
