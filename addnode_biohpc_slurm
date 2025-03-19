@@ -30,7 +30,7 @@ fi
 # the group these reservations need to belong to 
 # The user running this script needs to have that in their list!
 # run `biohpc_res accounts` to see what groups you are in
-resacct=2556 # "ECCO" group for accounting purposes
+resacct=2519 # "ECCO" group for accounting purposes
 resgroup="ECCO" # the group of IDs that will be added to the reservation
 
 # compute stuff
