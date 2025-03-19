@@ -1,4 +1,4 @@
-17 10 * * * /home/lv39/bin/biohpc-admin-scripts/addnode_biohpc_slurm
-55 11 * * * /home/lv39/bin/biohpc-admin-scripts/update_biohpc_slurm
-55 23 * * * /home/lv39/bin/biohpc-admin-scripts/update_biohpc_slurm
-00  * * * * /home/lv39/bin/biohpc-admin-scripts/query_biohpc_slurm
+17 10 * * * $HOME/bin/biohpc-admin-scripts/addnode_biohpc_slurm
+55 11 * * * $HOME/bin/biohpc-admin-scripts/update_biohpc_slurm
+55 23 * * * $HOME/bin/biohpc-admin-scripts/update_biohpc_slurm
+00  * * * * $HOME/bin/biohpc-admin-scripts/query_biohpc_slurm
