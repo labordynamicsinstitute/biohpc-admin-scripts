@@ -4,7 +4,7 @@ PATH=/programs/bin/labutils:$PATH
 
 # The script will add a 1-day (or as defined) reservation to a specific node, after any current reservation
 offset="1 days"
-resacct=2519 # "ECCO" group for accounting purposes
+resacct=2556 # "ECCO" group for accounting purposes
 resgroup="ECCO" # the group of IDs that will be added to the reservation
 
 
