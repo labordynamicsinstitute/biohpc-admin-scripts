@@ -12,6 +12,7 @@ REPO_USER=$GITHUB_USER
 [[ -d $WORKDIR ]] || mkdir $WORKDIR
 REPO_DIR=${WORKDIR}/cbsueccosl01_status
 WORKFILE=${REPO_DIR}/_data/eccoload.txt
+QUEUEFILE=${REPO_DIR}/_data/eccoqueue.txt
 
 current_date=$(date +"%Y-%m-%d %H:%M")
 
@@ -27,9 +28,10 @@ git config --local credential.helper "!f() { echo \"username=$REPO_USER\"; echo 
 echo "As of ${current_date}:" >  $WORKFILE
 echo "" >>  $WORKFILE
 sinfo --cluster cbsueccosl01 >> $WORKFILE
+squeue --cluster cbsueccosl01 | grep -vE "JOBID|CLUSTER" | sort -n -k 1 > $QUEUEFILE
 
 # Commit and push changes
-git add .
+git add "$REPO_DIR"
 git commit -m "Automated update on system status"
 git push origin main
 
