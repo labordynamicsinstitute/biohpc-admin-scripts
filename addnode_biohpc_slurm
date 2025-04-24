@@ -80,11 +80,22 @@ done
 
 # Now add them to SLURM
 # We check for all current reservations, and add the nodes to SLURM
+# Wait 30s for any new servers to show up
+
+echo "Waiting 30s."
+sleep 30
+
+echo "Adding any existing servers in reservation to the cluster"
 
 list_of_servers=$(biohpc_res list --current | grep "ECCO Slurm temporary" | awk '{print $2}')
 
 for server in $list_of_servers
 do
+  # ensure that the group has access
+  printf "%12s :" $server
+  res=$(biohpc_res list --current | grep $server | awk ' { print $1} ')
+  printf "%10s : " $res
+  [[ -z $res ]] || biohpc_res edit $res --add $resgroup --hide
   # if the server is not yet in SLURM, add it
   manage_slurm list | grep -q $server 
   if [ $? -eq 0 ]
